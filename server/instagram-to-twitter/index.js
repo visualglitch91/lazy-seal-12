@@ -1,5 +1,6 @@
 const axios = require('axios')
 const twitter = require('../../utils/twitter')
+const logger = require('../../utils/logger')('instagram-to-twitter')
 
 const altRegex = /\"accessibility_caption\":\"(.*?)\",\"is_video\"/
 const captionRegex = /\"edge_media_to_caption\":\{\"edges\":\[\{\"node\":\{\"text\":\"(.*?)\"\}\}\]\},\"caption_is_edited\"/gm
@@ -14,7 +15,7 @@ module.exports = function instagramToTwitterHandler(req, res) {
   // Respond early to avoid timeout
   res.sendStatus(200)
 
-  console.log(`Sending instagram pic ${url} to twitter`)
+  logger.log(`Sending instagram pic ${url} to twitter`)
 
   axios
     .get(url, { responseType: 'text' })
@@ -53,6 +54,6 @@ module.exports = function instagramToTwitterHandler(req, res) {
         })
     )
     .catch(err => {
-      console.error(err)
+      logger.error(err)
     })
 }

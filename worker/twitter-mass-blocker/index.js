@@ -1,6 +1,7 @@
 const { Observable, Subject, interval, merge, of, from, race } = require('rxjs')
 const { map, flatMap, distinct, zip, tap, filter, bufferTime, count } = require('rxjs/operators')
-const T = require('../../utils/twitter')
+const twitter = require('../../utils/twitter')
+const logger = require('../../utils/logger')('twitter-mass-blocker')
 
 const config = JSON.parse(process.env.TWITTER_MASS_BLOCKER_CONFIG)
 const initialCursor = process.env.TWITTER_MASS_BLOCKER_INITIAL_CURSOR
@@ -27,9 +28,9 @@ const formatUser = user => `${user.screen_name} <${user.id_str}>`
 function main(cursor = -1, round = 0) {
   let nextCursor
 
-  console.log(`Fetching followers for cursor ${cursor}, round ${round}`)
+  logger.log(`Fetching followers for cursor ${cursor}, round ${round}`)
   from(
-    T.get('/followers/ids', {
+    twitter.get('/followers/ids', {
       screen_name: config.targetUsername,
       stringify_ids: true,
       cursor: cursor,
@@ -49,10 +50,9 @@ function main(cursor = -1, round = 0) {
       bufferTime(2000, null, 100),
       filter(ids => ids.length > 0),
       flatMap(ids =>
-        T.get('/users/lookup', { user_id: ids.join(','), include_blocking: true }).then(
-          response => response.data,
-          error => console.log(error.message) || []
-        )
+        twitter
+          .get('/users/lookup', { user_id: ids.join(','), include_blocking: true })
+          .then(response => response.data, error => logger.log(error.message) || [])
       ),
       flatMap(identity),
       filter(
@@ -79,9 +79,9 @@ function main(cursor = -1, round = 0) {
     )
     .subscribe({
       next: user => {
-        T.post('/blocks/create', { user_id: user.id_str }).then(() =>
-          console.log(`${formatUser(user)} blocked`)
-        )
+        twitter
+          .post('/blocks/create', { user_id: user.id_str })
+          .then(() => logger.log(`${formatUser(user)} blocked`))
       },
       complete: () => {
         if (nextCursor && round < config.maxRounds) {
@@ -92,10 +92,10 @@ function main(cursor = -1, round = 0) {
       },
       error: error => {
         if (error.message === 'Rate limit exceeded') {
-          console.log(error.message)
+          logger.log(error.message)
           setTimeout(main, RETRY_INTERVAL, cursor, round)
         } else {
-          console.error(error.message)
+          logger.error(error.message)
         }
       }
     })

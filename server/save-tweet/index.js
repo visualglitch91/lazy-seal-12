@@ -1,5 +1,6 @@
 const moment = require('moment')
 const mongo = require('../../utils/mongo')
+const logger = require('../../utils/logger')('save-tweet')
 
 function parseDate(str) {
   return moment(str, 'MMMM D, YYYY at hh:mmA').toDate()
@@ -9,7 +10,7 @@ module.exports = function saveTweet(req, res) {
   const { url, createdAt } = req.body
   const tweetId = url.split('/').pop()
 
-  console.log(`Saving tweet ${tweetId}, posted at ${createdAt}`)
+  logger.log(`Saving tweet ${tweetId}, posted at ${createdAt}`)
 
   mongo('tweets')
     .then(collection =>
@@ -21,7 +22,7 @@ module.exports = function saveTweet(req, res) {
     .then(
       () => res.sendStatus(201),
       err => {
-        console.error(err)
+        logger.error(err)
         res.sendStatus(500)
       }
     )
