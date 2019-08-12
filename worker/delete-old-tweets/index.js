@@ -22,24 +22,21 @@ async function main() {
       )
       .then(response => response.toArray())
 
-    logger.log(`Starting to delete ${tweets.length} tweets`)
+    const tweetsToDelete = tweets.filter(tweet => !toKeep.includes(tweet.tweetId))
 
-    for (let tweet of tweets) {
+    logger.log(`Starting to delete ${tweetsToDelete.length} tweets`)
+
+    for (let tweet of tweetsToDelete) {
       logger.log(`Deleting tweet ${tweet.tweetId}`)
 
-      try {
-        if (!toKeep.includes(tweet.tweetId)) {
-          await twitter
-            .post('statuses/destroy', { id: tweet.tweetId })
-            .catch(err =>
-              err.message === 'No status found with that ID.' ? null : Promise.reject(err)
-            )
-        }
-
-        await mongo('tweets').then(collection => collection.deleteOne(tweet))
-      } catch (err) {
-        logger.error(err)
-      }
+      await twitter
+        .post('statuses/destroy', { id: tweet.tweetId })
+        .catch(err =>
+          err.message === 'No status found with that ID.' ? null : Promise.reject(err)
+        )
+        .then(() => mongo('tweets'))
+        .then(collection => collection.deleteOne(tweet))
+        .catch(logger.error)
     }
 
     logger.log('Tweets deleted!')

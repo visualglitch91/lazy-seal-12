@@ -7,7 +7,7 @@ An application with workers and webhooks to make my life easier (and also to sho
 ### Webhooks
 
 - **instagram-to-twitter:** Foward photos from my instagram account to my twitter, including the alt text and changing the caption a bit (triggered by IFTT)
-- **save-tweet:** Save tweets ids and creation dates to be further deleted with the delete-old-tweets worker
+- **save-tweet:** Save tweets ids and creation dates to be further deleted with the delete-old-tweets worker (triggered by IFTT)
 
 ### Workers
 
