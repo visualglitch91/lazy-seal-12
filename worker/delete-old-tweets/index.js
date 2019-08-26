@@ -7,6 +7,11 @@ const logger = require('../../utils/logger')('delete-old-tweets')
 
 const INTERVAL = 6 * 60 * 60 * 1000
 const toKeep = fs.readFileSync(path.join(__dirname, 'to-keep.txt'), 'UTF-8').split('\n')
+const ignoredErrors = [
+  'User has been suspended.',
+  'No status found with that ID.',
+  'Sorry, that page does not exist'
+]
 
 async function main() {
   try {
@@ -31,9 +36,7 @@ async function main() {
 
       await twitter
         .post('statuses/destroy', { id: tweet.tweetId })
-        .catch(err =>
-          err.message === 'No status found with that ID.' ? null : Promise.reject(err)
-        )
+        .catch(err => (ignoredErrors.includes(err.message) ? null : Promise.reject(err)))
         .then(() => mongo('tweets'))
         .then(collection => collection.deleteOne(tweet))
         .catch(logger.error)
