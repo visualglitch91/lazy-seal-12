@@ -10,7 +10,7 @@ const toKeep = fs.readFileSync(path.join(__dirname, 'to-keep.txt'), 'UTF-8').spl
 const ignoredErrors = [
   'User has been suspended.',
   'No status found with that ID.',
-  'Sorry, that page does not exist',
+  'Sorry, that page does not exist.',
   'Sorry, you are not authorized to see this status.'
 ]
 
