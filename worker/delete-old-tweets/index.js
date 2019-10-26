@@ -21,7 +21,7 @@ async function main() {
         collection.find({
           createdAt: {
             $lte: moment()
-              .subtract(2, 'weeks')
+              // .subtract(2, 'weeks')
               .toDate()
           }
         })
