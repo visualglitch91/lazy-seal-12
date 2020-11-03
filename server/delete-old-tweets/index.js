@@ -71,4 +71,7 @@ async function main() {
   setTimeout(main, INTERVAL)
 }
 
-main()
+module.exports = function deleteOldTweets(_, res) {
+  main()
+  res.sendStatus(204)
+}

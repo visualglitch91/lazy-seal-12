@@ -1,5 +1,5 @@
-const logger = require("../../utils/logger")("ping");
+const logger = require('../../utils/logger')('ping')
 
-module.exports = function ping(req, res) {
-  res.sendStatus(204);
-};
+module.exports = function ping(_, res) {
+  res.sendStatus(204)
+}

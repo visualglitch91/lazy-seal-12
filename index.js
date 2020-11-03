@@ -1,2 +1,2 @@
 require('./server')
-require('./worker')
+// require('./worker')
