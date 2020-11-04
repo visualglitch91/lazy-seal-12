@@ -66,6 +66,7 @@ async function main() {
     logger.log('Tweets deleted!')
   } catch (err) {
     logger.error(err)
+    ifttt.reportError(`delete-old-tweets`, err)
   }
 
   setTimeout(main, INTERVAL)

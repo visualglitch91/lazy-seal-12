@@ -1,6 +1,6 @@
-const axios = require('axios')
 const puppeteer = require('puppeteer')
 const logger = require('../../utils/logger')('hr-locker')
+const ifttt = require('../../utils/ifttt')
 
 const email = process.env.HRLOCKER_EMAIL
 const password = process.env.HRLOCKER_PASSWORD
@@ -100,15 +100,10 @@ module.exports = async function hrLocker(req, res) {
     }
 
     logger.log(`${action}: success`)
-  } catch (error) {
-    if (process.env.IFTTT_ERROR_WEBHOOK) {
-      axios.post(process.env.IFTTT_ERROR_WEBHOOK, {
-        value1: `${action}: failed`,
-        value2: JSON.stringify(error, null, 2),
-      })
-    }
-
+    ifttt.pushNotification(`${action}: success`)
+  } catch (err) {
     logger.log(`${action}: failed`)
-    logger.error(error)
+    logger.error(err)
+    ifttt.reportError(`${action}: failed`, err)
   }
 }
