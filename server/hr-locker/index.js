@@ -82,6 +82,7 @@ module.exports = async function hrLocker(req, res) {
   res.sendStatus(204)
 
   logger.log(`${action}: start`)
+  ifttt.pushNotification(`${action}: start`)
 
   try {
     switch (action) {
