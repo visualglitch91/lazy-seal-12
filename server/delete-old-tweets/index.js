@@ -4,7 +4,7 @@ const moment = require('moment')
 const twitter = require('../../utils/twitter')
 const logger = require('../../utils/logger')('delete-old-tweets')
 
-const INTERVAL = 6 * 60 * 60 * 1000
+const TTL = 7 //in days
 
 const toKeep = fs
   .readFileSync(path.join(__dirname, 'to-keep.txt'), 'UTF-8')
@@ -42,7 +42,7 @@ async function getLatest3200Tweets() {
 
 async function main() {
   try {
-    const until = moment().subtract(7, 'days').toDate()
+    const until = moment().subtract(TTL, 'days').toDate()
 
     const tweets = await getLatest3200Tweets()
 
@@ -68,8 +68,6 @@ async function main() {
     logger.error(err)
     ifttt.reportError(`delete-old-tweets`, err)
   }
-
-  setTimeout(main, INTERVAL)
 }
 
 module.exports = function deleteOldTweets(_, res) {
