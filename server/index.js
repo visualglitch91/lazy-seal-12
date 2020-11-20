@@ -17,8 +17,8 @@ app.use((req, res, next) => {
   }
 })
 
-app.post('/instagram-to-twitter', require('./instagram-to-twitter'))
-app.post('/save-tweet', require('./save-tweet'))
+// app.post('/instagram-to-twitter', require('./instagram-to-twitter'))
+// app.post('/save-tweet', require('./save-tweet'))
 app.post('/ping', require('./ping'))
 app.post('/delete-old-tweets', require('./delete-old-tweets'))
 app.post('/hr-locker', require('./hr-locker'))
