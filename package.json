@@ -9,6 +9,7 @@
     "mongodb": "^3.3.0-beta2",
     "puppeteer": "^5.4.1",
     "rxjs": "^6.5.2",
+    "spotify-web-api-node": "^5.0.2",
     "twit": "^2.2.11"
   }
 }
