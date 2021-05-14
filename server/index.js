@@ -23,5 +23,6 @@ app.post('/ping', require('./ping'))
 app.post('/delete-old-tweets', require('./delete-old-tweets'))
 app.post('/hr-locker', require('./hr-locker'))
 app.post('/spotify', require('./spotify'))
+app.post('/vacina', require('./vacina'))
 
 app.listen(port, () => console.log('Listening on', port))
