@@ -4,7 +4,7 @@ const moment = require('moment')
 const twitter = require('../../utils/twitter')
 const logger = require('../../utils/logger')('delete-old-tweets')
 
-const TTL = [7, 'hours']
+const TTL = [7, 'days']
 
 const toKeep = fs
   .readFileSync(path.join(__dirname, 'to-keep.txt'), 'UTF-8')
