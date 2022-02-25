@@ -1,10 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
-const twitter = require('../../utils/twitter')
+const createTwitterClient = require('../../utils/twitter')
 const logger = require('../../utils/logger')('delete-old-tweets')
-
-const TTL = [7, 'days']
 
 const toKeep = fs
   .readFileSync(path.join(__dirname, 'to-keep.txt'), 'UTF-8')
@@ -17,7 +15,7 @@ const ignoredErrors = [
   'Sorry, you are not authorized to see this status.',
 ]
 
-async function getLatest3200Tweets() {
+async function getLatest3200Tweets(twitter) {
   let tweets = []
 
   async function next(maxId) {
@@ -40,13 +38,15 @@ async function getLatest3200Tweets() {
   return next()
 }
 
-async function main(...ttl) {
+async function main(username, ttl) {
   try {
     const until = moment()
       .subtract(...ttl)
       .toDate()
 
-    const tweets = await getLatest3200Tweets()
+    const twitter = createTwitterClient(username)
+
+    const tweets = await getLatest3200Tweets(twitter)
 
     const tweetsToDelete = tweets
       .filter((tweet) => new Date(tweet.created_at) < until)
@@ -72,8 +72,8 @@ async function main(...ttl) {
   }
 }
 
-module.exports = function deleteOldTweets(_, res) {
-  main(...TTL)
+module.exports = function deleteOldTweets(req, res) {
+  main(req.body.username, req.body.ttl)
   res.sendStatus(204)
 }
 
