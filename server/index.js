@@ -17,12 +17,7 @@ app.use((req, res, next) => {
   }
 })
 
-// app.post('/instagram-to-twitter', require('./instagram-to-twitter'))
-// app.post('/save-tweet', require('./save-tweet'))
-app.post('/ping', require('./ping'))
-app.post('/delete-old-tweets', require('./delete-old-tweets'))
-app.post('/hr-locker', require('./hr-locker'))
 app.post('/spotify', require('./spotify'))
-app.post('/vacina', require('./vacina'))
+app.post('/delete-old-tweets', require('./delete-old-tweets'))
 
 app.listen(port, () => console.log('Listening on', port))
