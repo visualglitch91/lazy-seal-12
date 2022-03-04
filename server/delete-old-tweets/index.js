@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
+const uniqBy = require('lodash/uniqBy')
 const createTwitterClient = require('../../utils/twitter')
 const logger = require('../../utils/logger')('delete-old-tweets')
 
@@ -16,26 +17,25 @@ const ignoredErrors = [
 ]
 
 async function getLatest3200Tweets(twitter) {
-  let tweets = []
+  const { data: user } = await twitter.me()
 
-  async function next(maxId) {
-    const response = await twitter.get('statuses/user_timeline', {
-      max_id: maxId,
-      include_rts: true,
-      user_id: '69746799',
-      count: 200,
-    })
+  const userTimeline = await twitter.userTimeline(user.id, {
+    'tweet.fields': ['created_at'],
+  })
 
-    if (response.data.length <= 1) {
-      return tweets
-    }
+  // await userTimeline.fetchLast(3200)
 
-    tweets = [...tweets, ...response.data]
+  // normalize v1 ids
+  let tweets = userTimeline.tweets.map((it) => ({
+    id: it.id_str || it.id,
+    created_at: it.created_at,
+    text: it.full_text || it.text,
+  }))
 
-    return next(response.data[response.data.length - 1].id_str)
-  }
+  // remove duplicated tweets
+  tweets = uniqBy(tweets, 'id')
 
-  return next()
+  return tweets
 }
 
 async function main(username, ttl) {
@@ -50,15 +50,15 @@ async function main(username, ttl) {
 
     const tweetsToDelete = tweets
       .filter((tweet) => new Date(tweet.created_at) < until)
-      .filter((tweet) => !toKeep.includes(tweet.id_str))
+      .filter((tweet) => !toKeep.includes(tweet.id))
 
     logger.log(`Starting to delete ${tweetsToDelete.length} tweets`)
 
     for (let tweet of tweetsToDelete) {
-      logger.log(`Deleting tweet ${tweet.id_str}`)
+      logger.log(`Deleting tweet ${tweet.id}`)
 
       await twitter
-        .post('statuses/destroy', { id: tweet.id_str })
+        .deleteTweet(tweet.id)
         .catch((err) =>
           ignoredErrors.includes(err.message) ? null : Promise.reject(err)
         )
