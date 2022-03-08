@@ -24,7 +24,7 @@ async function getLatest3200Tweets(twitter) {
     'tweet.fields': ['created_at'],
   })
 
-  // await userTimeline.fetchLast(3200)
+  await userTimeline.fetchLast(3200)
 
   // normalize v1 ids
   let tweets = userTimeline.tweets.map((it) => ({
