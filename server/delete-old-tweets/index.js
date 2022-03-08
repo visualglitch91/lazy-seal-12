@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const moment = require('moment')
 const uniqBy = require('lodash/uniqBy')
+const ifttt = require('../../utils/ifttt')
 const createTwitterClient = require('../../utils/twitter')
 const logger = require('../../utils/logger')('delete-old-tweets')
 
