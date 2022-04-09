@@ -6,7 +6,7 @@ module.exports = function getSpotifyClient() {
   if (!clientPromise) {
     clientPromise = new Promise((resolve, reject) => {
       const spotifyApi = new SpotifyWebApi({
-        redirectUri: 'http://localhost:3000/spotify-callback',
+        redirectUri: 'http://localhost:3000/spotify-auth-callback',
         clientId: process.env.SPOTIFY_CLIENT_ID,
         clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
         refreshToken: process.env.SPOTIFY_REFRESH_TOKEN,
