@@ -4,22 +4,20 @@ function spotify(method, ...args) {
   return getSpotifyClient().then((spotify) => spotify[method](...args))
 }
 
-function transferMyPlayback() {
+function transferMyPlayback(payload) {
   return spotify('getMyDevices')
     .then((data) => data.body.devices)
-    .then((devices) =>
-      devices.find((it) => it.name === process.env.SPOTIFY_COMPUTER_DEVICE_NAME)
-    )
+    .then((devices) => devices.find((it) => it.name === payload))
     .then((device) => spotify('transferMyPlayback', [device.id]))
 }
 
 module.exports = async function hrLocker(req, res) {
-  const { action } = req.body
+  const { action, payload } = req.body
 
   try {
     switch (action) {
       case 'transfer_to_computer':
-        await transferMyPlayback()
+        await transferMyPlayback(payload)
         break
       case 'play':
         await spotify('play')
